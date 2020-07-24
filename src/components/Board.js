@@ -6,28 +6,22 @@ const numColumns = 25
 const cellWidth = "20px"
 const cellHeight = "20px"
 
-// Creating arr of column inside of arr of rows
-const Grid = () => {
-    const row = []
-    for (let r = 0; r < numRows; r++){
-        const col = []
-        for (let c = 0; c < numColumns; c++){
-            col.push(<td key={`${r},${c}`}></td>)
-        }
-        row.push(<tr key={r}>{col}</tr>)
-    }
-    return <table>{row}</table>
-}
-
-
 export default function Board(){
+
+    // Creating arr of column inside of arr of rows
+    const Grid = () => {
+        const rows = [];
+        for (let i = 0; i < numRows; i++) {
+            rows.push(Array.from(Array(numColumns), () => 0));
+        }
+        return rows;
+    }
 
     const [grid, setGrid] = useState(() => {
         return Grid()
     })
-    
-    // console.log(grid.props.children)
 
+    // console.log(grid)
 
     return(
         <div 
@@ -38,15 +32,21 @@ export default function Board(){
             gridRowGap: 0,
           }} 
           >
-            {grid.props.children.map((row, i) =>
-                row.props.children.map((col, k) => (
+            {grid.map((row, i) =>
+                row.map((col, j) => (
                     <div
-                    key={`${i}-${k}`}
+                    key={`${i}${j}`}
+                    onClick = {() => {
+                        // console.log(grid[i][j])
+                        const newGrid = [...grid]
+                        newGrid[i][j] = grid[i][j] ? 0 : 1
+                        setGrid(newGrid)                    
+                    }}
                     style={{
                         width: cellWidth,
                         height: cellHeight,
-                        backgroundColor: "gray",
-                        border: "1px solid black",
+                        backgroundColor: grid[i][j] ? "blue" : "yellow",
+                        border: "0.5px solid gray",
                     }}
                     />
                 ))
