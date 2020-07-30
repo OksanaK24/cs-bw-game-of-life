@@ -108,7 +108,6 @@ export default function Board(){
         }
     }
 
-
     return(
         <>
             <div 
@@ -148,6 +147,14 @@ export default function Board(){
             <div>
                 Generation: {generationRef.current}
             </div>
+
+            <button
+                onClick={() => {
+                    setGrid(Grid())
+                }}
+            >
+                Clear
+            </button>
 
         </>
     )
