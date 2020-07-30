@@ -1,8 +1,9 @@
-import React, { useState } from "react"
+import React, { useState, useRef, useCallback} from "react"
+import produce from "immer"
 
 // Declaring how many rows and columns the grid will have + params that can be used a few times
-const numRows = 5
-const numColumns = 5
+const numRows = 25
+const numColumns = 25
 const cellWidth = "20px"
 const cellHeight = "20px"
 
@@ -36,57 +37,73 @@ export default function Board(){
 
     const [playing, setPlay] = useState(false)
 
-    const Neighbors = (i, j) => {
-        let alive_neighbors = 0
-        cell_neighbors.forEach(([x, y]) => {
-            let r = i + x;
-            let c = j + y;
-            if (r >= 0 && r < numRows && c >= 0 && c < numColumns) {
-                alive_neighbors += grid[r][c];
-            }
-            // console.log(alive_neighbors, "neighbors inside of the loop")
-        })
-        // console.log(alive_neighbors, "final neighbors")
-        return alive_neighbors
-    }
+    const playingRef = useRef(playing)
+    playingRef.current = playing
 
-    const updatedGrid = () => {
-        let newGrid = Grid()
-        // console.log(newGrid, "newGrid before neighbors")
-        // console.log(grid, "grid before neighbors")
-        for (let i = 0; i < grid.length; i++){
-            for (let j = 0; j < grid[i].length; j++){
-                // console.log(grid, "grid inside of neighbors")
-                // console.log(grid[i][j], "the cell inside of neighbors")
-                // console.log(i, "the row")
-                // console.log(j, "the column")
-                let cell = grid[i][j]
-                let neighbors = Neighbors(i, j)
-                // console.log(neighbors, "inside of updatedGrid")
-                if(cell === 1 && (neighbors > 3 || neighbors <2) ){
-                    newGrid[i][j] = 0
-                    // console.log("it was one, now zero")
-                }else if(cell === 0 && neighbors === 3){
-                    newGrid[i][j] = 1
-                    // console.log("it was zero, now one")
-                }else{
-                    newGrid[i][j] = cell
-                }
+    const [clickable, setClickable] = useState(true)
+
+    // The function to make the cell alive or dead (onClick)
+    const Cell = (i ,j) => {
+        const newGrid = produce(grid, gridCopy => {
+            if(clickable){
+                gridCopy[i][j] = grid[i][j] ? 0 : 1
             }
-        }
-        
-        // console.log(newGrid, "newGrid after neighbors")
-        // console.log(grid, "grid after neighbors")
+            
+        })
         setGrid(newGrid)
     }
 
+    // Counting neighbors, so I can check how many are alive around certain cell
+    const Neighbors = (g, i, j) => {
+        let alive_neighbors = 0
+        cell_neighbors.forEach(([x, y]) => {
+            let r = i + x
+            let c = j + y
+            if (r >= 0 && r < numRows && c >= 0 && c < numColumns) {
+                alive_neighbors += g[r][c]
+            }
+        })
+        return alive_neighbors
+    }
+
+    const UpdatedGrid = useCallback(() => {
+        if (!playingRef.current) {
+          return
+        }
+    
+        setGrid(g => {
+          return produce(g, gridCopy => {
+            for (let i = 0; i < numRows; i++) {
+              for (let j = 0; j < numColumns; j++) {
+                let neighbors = Neighbors(g, i, j)
+                
+    
+                if (neighbors < 2 || neighbors > 3) {
+                  gridCopy[i][j] = 0
+                } else if (g[i][j] === 0 && neighbors === 3) {
+                  gridCopy[i][j] = 1
+                }
+              }
+            }
+          });
+        });
+    
+        setTimeout(UpdatedGrid, 100)
+    }, [])
+
+    // function onClick to play the game
+    const PlayingGame = () => {
+        setPlay(!playing)
+        setClickable(!clickable)
+        if(!playing){
+            playingRef.current = true
+            UpdatedGrid()
+        }
+    }
+
+
     return(
         <>
-            <button
-                onClick={() => {
-                    updatedGrid()
-                }}
-            >TRY</button>
             <div 
             style={{
                 display: "grid",
@@ -100,15 +117,7 @@ export default function Board(){
                         <div
                         key={`${i}${j}`}
                         onClick = {() => {
-                            // console.log(grid, "before clicking")
-                            // console.log(grid[i][j], "the cell before clicking")
-                            // console.log(i, "the row")
-                            // console.log(j, "the column")
-                            const newGrid = [...grid]
-                            newGrid[i][j] = grid[i][j] ? 0 : 1
-                            setGrid(newGrid)
-                            // console.log(grid, "after clicking")
-                            // console.log(grid[i][j], "the cell after clicking")                    
+                            Cell(i, j)
                         }}
                         style={{
                             width: cellWidth,
@@ -120,6 +129,13 @@ export default function Board(){
                     ))
                 )}
             </div>
+            <button
+                onClick={() => {
+                    PlayingGame()
+                }}
+            >
+                {!playingRef.current ? "Play Game" : "Stop Game"}
+            </button>
         </>
     )
 }
