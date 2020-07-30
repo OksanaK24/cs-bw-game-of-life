@@ -42,6 +42,10 @@ export default function Board(){
 
     const [clickable, setClickable] = useState(true)
 
+    const [generation, setGeneration] = useState(1)
+    const generationRef = useRef(generation)
+    generationRef.current = generation
+
     // The function to make the cell alive or dead (onClick)
     const Cell = (i ,j) => {
         const newGrid = produce(grid, gridCopy => {
@@ -85,8 +89,11 @@ export default function Board(){
                 }
               }
             }
-          });
-        });
+          })
+        })
+
+        let newGeneration = generationRef.current + 1
+        setGeneration(newGeneration)
     
         setTimeout(UpdatedGrid, 100)
     }, [])
@@ -129,6 +136,7 @@ export default function Board(){
                     ))
                 )}
             </div>
+
             <button
                 onClick={() => {
                     PlayingGame()
@@ -136,6 +144,11 @@ export default function Board(){
             >
                 {!playingRef.current ? "Play Game" : "Stop Game"}
             </button>
+
+            <div>
+                Generation: {generationRef.current}
+            </div>
+
         </>
     )
 }
