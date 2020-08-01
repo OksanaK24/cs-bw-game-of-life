@@ -6,6 +6,7 @@ const numRows = 25
 const numColumns = 25
 const cellWidth = "20px"
 const cellHeight = "20px"
+let amountOfCells = numRows*numRows
 
 // Creating arr of column inside of arr of rows
 const Grid = () => {
@@ -46,6 +47,14 @@ export default function Board(){
     const generationRef = useRef(generation)
     generationRef.current = generation
 
+    const [aliveAmount, setAliveAmount] = useState(0)
+    const aliveAmountRef = useRef(aliveAmount)
+    aliveAmountRef.current = aliveAmount
+
+    const [deadAmount, setDeadAmount] = useState(0)
+    const deadAmountRef = useRef(deadAmount)
+    deadAmountRef.current = deadAmount
+
     // The function to make the cell alive or dead (onClick)
     const Cell = (i ,j) => {
         const newGrid = produce(grid, gridCopy => {
@@ -80,7 +89,6 @@ export default function Board(){
             for (let i = 0; i < numRows; i++) {
               for (let j = 0; j < numColumns; j++) {
                 let neighbors = Neighbors(g, i, j)
-                
     
                 if (neighbors < 2 || neighbors > 3) {
                   gridCopy[i][j] = 0
@@ -128,7 +136,7 @@ export default function Board(){
                         style={{
                             width: cellWidth,
                             height: cellHeight,
-                            backgroundColor: grid[i][j] ? "blue" : "yellow",
+                            backgroundColor: grid[i][j] ? "purple" : "yellow",
                             border: "0.5px solid gray",
                         }}
                         />
@@ -155,6 +163,14 @@ export default function Board(){
             >
                 Clear
             </button>
+
+            {/* <div>
+                Alive: {aliveAmount}
+            </div>
+
+            <div>
+                Dead: {deadAmountRef.current}
+            </div> */}
 
         </>
     )
