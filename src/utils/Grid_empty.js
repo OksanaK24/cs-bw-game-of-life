@@ -1,8 +1,8 @@
 // Creating arr of column inside of arr of rows
-const Grid = (numRows, numColumns) => {
+const Grid = (size) => {
     const rows = []
-    for (let i = 0; i < numRows; i++) {
-        rows.push(Array.from(Array(numColumns), () => 0))
+    for (let i = 0; i < size; i++) {
+        rows.push(Array.from(Array(size), () => 0))
     }
     return rows
 }

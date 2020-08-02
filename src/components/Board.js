@@ -1,29 +1,33 @@
 import React, { useState, useRef, useCallback} from "react"
 import produce from "immer"
-import Slider from "react-input-slider"
+import "../styling.css"
 
 import cell_neighbors from "../utils/neighbors"
-import {numRows, numColumns, cellWidth, cellHeight} from "../utils/board_params"
+import { size } from "../utils/board_params"
 
 import Grid from "../utils/Grid_empty"
 import RandomGrid from "../utils/Grid_random"
 
+import Tree1 from "../images/tree1.png"
+import Tree2 from "../images/tree2.png"
+import Tree3 from "../images/tree3.png"
+import Tree4 from "../images/tree4.png"
+
 export default function Board(){
 
-    const [rowAmount, setRowAmount] = useState(numRows)
-    const rowRew = useRef(rowAmount)
-    rowRew.current = rowAmount
+    const [gridSize, setGridSize] = useState(size)
+    const gridSizeRef = useRef(gridSize)
+    gridSizeRef.current = gridSize
 
-    const [columnsAmount, setColumnsAmount] = useState(numColumns)
-    const columnRef = useRef(columnsAmount)
-    columnRef.current = columnsAmount
+    const [cellHeight, setCellHeight] = useState("20px")
+    const [cellWidth, setCellWidth] = useState("20px")
+
 
     const [grid, setGrid] = useState(() => {
-        return Grid(rowAmount, columnsAmount)
+        return Grid(size)
     })
 
     const [playing, setPlay] = useState(false)
-
     const playingRef = useRef(playing)
     playingRef.current = playing
 
@@ -37,6 +41,8 @@ export default function Board(){
     const speedRef = useRef(speed)
     speedRef.current = speed
 
+    const [image, setImage] = useState(1)
+
 
     // The function to make the cell alive or dead (onClick)
     const cell = (i ,j) => {
@@ -48,6 +54,10 @@ export default function Board(){
         })
         setGrid(newGrid)
     }
+    
+    // ======================================================================
+    // ==================== ALGORITHM TO COUNT NEIGHBORS ====================
+    // ======================================================================
 
     // Counting neighbors, so I can check how many are alive around certain cell
     const neighborsAmount = (g, i, j) => {
@@ -55,7 +65,7 @@ export default function Board(){
         cell_neighbors.forEach(([x, y]) => {
             let r = i + x
             let c = j + y
-            if (r >= 0 && r < rowRew.current && c >= 0 && c < columnRef.current) {
+            if (r >= 0 && r < gridSizeRef.current && c >= 0 && c < gridSizeRef.current) {
                 alive_neighbors += g[r][c]
             }
         })
@@ -69,8 +79,8 @@ export default function Board(){
     
         setGrid(g => {
           return produce(g, gridCopy => {
-            for (let i = 0; i < rowRew.current; i++) {
-              for (let j = 0; j < columnRef.current; j++) {
+            for (let i = 0; i < gridSizeRef.current; i++) {
+              for (let j = 0; j < gridSizeRef.current; j++) {
                 let neighbors = neighborsAmount(g, i, j)
     
                 if (neighbors < 2 || neighbors > 3) {
@@ -85,9 +95,14 @@ export default function Board(){
 
         let newGeneration = generationRef.current + 1
         setGeneration(newGeneration)
+        setImage(newGeneration)
     
         setTimeout(updatedGrid, 10000/speedRef.current)
     }, [])
+
+    // ============================================================
+    // ==================== ON CLICK FUNCTIONS ====================
+    // ============================================================
 
     // function onClick to play the game
     const playingGame = () => {
@@ -100,97 +115,154 @@ export default function Board(){
     }
 
     // changing the amount of rows and columns
-    const rowAndColumnChange = ({ x }) => {
+    const gridChange = (e) => {
+        let x = parseInt(e.target.value)
         if(!playing){
-            setRowAmount(x)
-            setColumnsAmount(x)
-            setGrid(Grid(x, x))
+            setGridSize(x)
+            setGrid(Grid(x))
             setGeneration(1)
+            if(x < 25){
+                setCellHeight("20px")
+                setCellWidth("20px")
+            }else if(x > 25 && x < 50){
+                setCellHeight("15px")
+                setCellWidth("15px")
+            }else if(x > 50 && x < 75){
+                setCellHeight("10px")
+                setCellWidth("10px")
+            }
         }
     }
 
+    const settingImage = () => {
+        if (image < 50){
+          return <img src={Tree1} alt="tree1"/>
+        } else if (image > 50 && image < 100) {
+          return <img src={Tree2} alt="tree2"/>
+        }else if (image > 100 && image < 200) {
+          return <img src={Tree3} alt="tree3"/>
+        }else if (image > 200) {
+          return <img src={Tree4} alt="tree4"/>
+        }
+    }
 
     return(
-        <>
-            <div 
-            style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${columnsAmount}, ${cellWidth})`,
-                gridColumnGap: 0,
-                gridRowGap: 0,
-            }} 
+        <div className="board" >
+            <div className="tree" >
+                {settingImage()}
+            </div>
+
+            <div
+                style={{
+                    width: "35%"
+                }}
             >
-                {grid.map((row, i) =>
-                    row.map((col, j) => (
-                        <div
-                        key={`${i}${j}`}
-                        onClick = {() => {
-                            cell(i, j)
+                <div 
+                    style={{
+                        display: "grid",
+                        maxWidth: "50rem",
+                        maxHeight: "50rem",
+                        gridTemplateColumns: `repeat(${gridSizeRef.current}, ${cellWidth})`,
+                        gridColumnGap: 0,
+                        gridRowGap: 0,
+                    }} 
+                >
+                    {grid.map((row, i) =>
+                        row.map((col, j) => (
+                            <div
+                            key={`${i}${j}`}
+                            onClick = {() => {
+                                cell(i, j)
+                            }}
+                            style={{
+                                width: cellWidth,
+                                height: cellHeight,
+                                backgroundColor: grid[i][j] ? "#228B22" : "white",
+                                border: "0.5px solid #663300",
+                            }}
+                            />
+                        ))
+                    )}
+                </div>
+            </div>
+
+            <div>
+
+                <div className="generation" >
+                    Generation: {generationRef.current}
+                </div>
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <button
+                        className="buttons"
+                        onClick={() => {
+                            playingGame()
                         }}
-                        style={{
-                            width: cellWidth,
-                            height: cellHeight,
-                            backgroundColor: grid[i][j] ? "purple" : "yellow",
-                            border: "0.5px solid gray",
+                    >
+                        {!playingRef.current ? "Play Game" : "Stop Game"}
+                    </button>
+
+
+                    <button
+                        className="buttons"
+                        onClick={() => {
+                            setGrid(Grid(gridSize))
+                            setGeneration(1)
+                            setImage(1)
                         }}
-                        />
-                    ))
-                )}
+                    >
+                        Clear Grid
+                    </button>
+
+                    <button
+                        className="buttons"
+                        onClick={() => {
+                            setGrid(RandomGrid(gridSize))
+                            setGeneration(1)
+                            setImage(1)
+                        }}
+                    >
+                        Random Grid
+                    </button>
+                </div>
+
+                <div className="inputs" >
+                    <p className="generation" >Grid Size</p>
+                    <input
+                        className="slider"
+                        type="range"
+                        min="5"
+                        max="100"
+                        step="1"
+                        onChange={(e) => gridChange(e)}
+                    />
+                    <p className="grid-size" > {gridSize} x {gridSize} </p>
+                </div>
+                
+
+                <div className="inputs" >
+                    <p className="generation" >Speed</p>
+                    <input
+                        className="slider"
+                        type="range"
+                        min="10"
+                        max="1000"
+                        step="10"
+                        onChange={(e) => {
+                            setSpeed(parseInt(e.target.value))
+                          }}
+                    />
+
+                </div>
+
             </div>
 
-            <button
-                onClick={() => {
-                    playingGame()
-                }}
-            >
-                {!playingRef.current ? "Play Game" : "Stop Game"}
-            </button>
-
-            <div>
-                Generation: {generationRef.current}
-            </div>
-
-            <button
-                onClick={() => {
-                    setGrid(Grid(rowAmount, columnsAmount))
-                    setGeneration(1)
-                }}
-            >
-                Clear
-            </button>
-
-            <button
-                onClick={() => {
-                    setGrid(RandomGrid(rowAmount, columnsAmount))
-                    setGeneration(1)
-                }}
-            >
-                Random Grid
-            </button>
-
-            <div>
-                <h3>Change the amount of rows and columns</h3>
-                <p> {rowAmount}, {columnsAmount} </p>
-                <Slider
-                    x={rowAmount}
-                    xmin = {5}
-                    xmax = {100}
-                    xstep = {1}
-                    onChange={rowAndColumnChange}
-                />
-            </div>
-
-            <div>
-                <h3>Speed</h3>
-                <Slider
-                    x={speed}
-                    xmin = {10}
-                    xmax = {1000}
-                    xstep = {10}
-                    onChange={({ x }) => setSpeed(x)}
-                />
-            </div>
-
-        </>
+        </div>
     )
 }
