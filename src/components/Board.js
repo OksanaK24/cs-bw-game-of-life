@@ -1,6 +1,6 @@
-import React, { useState, useRef, useCallback, useEffect} from "react"
+import React, { useState, useRef, useCallback} from "react"
 import produce from "immer"
-import Slider from "@material-ui/core/Slider"
+import Slider from "react-input-slider"
 
 import cell_neighbors from "../utils/neighbors"
 import {numRows, numColumns, cellWidth, cellHeight} from "../utils/board_params"
@@ -11,12 +11,12 @@ import RandomGrid from "../utils/Grid_random"
 export default function Board(){
 
     const [rowAmount, setRowAmount] = useState(numRows)
-    const rowRef = useRef(rowAmount)
-    rowRef.current = rowAmount
+    const rowRew = useRef(rowAmount)
+    rowRew.current = rowAmount
 
     const [columnsAmount, setColumnsAmount] = useState(numColumns)
-    const columnsRef = useRef(columnsAmount)
-    columnsRef.current = columnsAmount
+    const columnRef = useRef(columnsAmount)
+    columnRef.current = columnsAmount
 
     const [grid, setGrid] = useState(() => {
         return Grid(rowAmount, columnsAmount)
@@ -32,6 +32,10 @@ export default function Board(){
     const [generation, setGeneration] = useState(1)
     const generationRef = useRef(generation)
     generationRef.current = generation
+
+    const [speed, setSpeed] = useState(100)
+    const speedRef = useRef(speed)
+    speedRef.current = speed
 
 
     // The function to make the cell alive or dead (onClick)
@@ -51,7 +55,7 @@ export default function Board(){
         cell_neighbors.forEach(([x, y]) => {
             let r = i + x
             let c = j + y
-            if (r >= 0 && r < numRows && c >= 0 && c < numColumns) {
+            if (r >= 0 && r < rowRew.current && c >= 0 && c < columnRef.current) {
                 alive_neighbors += g[r][c]
             }
         })
@@ -65,8 +69,8 @@ export default function Board(){
     
         setGrid(g => {
           return produce(g, gridCopy => {
-            for (let i = 0; i < numRows; i++) {
-              for (let j = 0; j < numColumns; j++) {
+            for (let i = 0; i < rowRew.current; i++) {
+              for (let j = 0; j < columnRef.current; j++) {
                 let neighbors = neighborsAmount(g, i, j)
     
                 if (neighbors < 2 || neighbors > 3) {
@@ -82,7 +86,7 @@ export default function Board(){
         let newGeneration = generationRef.current + 1
         setGeneration(newGeneration)
     
-        setTimeout(updatedGrid, 100)
+        setTimeout(updatedGrid, 10000/speedRef.current)
     }, [])
 
     // function onClick to play the game
@@ -96,10 +100,13 @@ export default function Board(){
     }
 
     // changing the amount of rows and columns
-    const rowAndColumnChange = (event, newAmount) => {
-        setRowAmount(newAmount)
-        setColumnsAmount(newAmount)
-        setGrid(Grid(newAmount, newAmount))
+    const rowAndColumnChange = ({ x }) => {
+        if(!playing){
+            setRowAmount(x)
+            setColumnsAmount(x)
+            setGrid(Grid(x, x))
+            setGeneration(1)
+        }
     }
 
 
@@ -109,7 +116,6 @@ export default function Board(){
             style={{
                 display: "grid",
                 gridTemplateColumns: `repeat(${columnsAmount}, ${cellWidth})`,
-                // gridTemplateRows: `repeat(${rowRef.current}, ${cellHeight})`,
                 gridColumnGap: 0,
                 gridRowGap: 0,
             }} 
@@ -147,6 +153,7 @@ export default function Board(){
             <button
                 onClick={() => {
                     setGrid(Grid(rowAmount, columnsAmount))
+                    setGeneration(1)
                 }}
             >
                 Clear
@@ -155,6 +162,7 @@ export default function Board(){
             <button
                 onClick={() => {
                     setGrid(RandomGrid(rowAmount, columnsAmount))
+                    setGeneration(1)
                 }}
             >
                 Random Grid
@@ -162,14 +170,24 @@ export default function Board(){
 
             <div>
                 <h3>Change the amount of rows and columns</h3>
+                <p> {rowAmount}, {columnsAmount} </p>
                 <Slider
-                    value={rowAmount}
-                    min={5}
-                    step={1}
-                    max={100}
+                    x={rowAmount}
+                    xmin = {5}
+                    xmax = {100}
+                    xstep = {1}
                     onChange={rowAndColumnChange}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="non-linear-slider"
+                />
+            </div>
+
+            <div>
+                <h3>Speed</h3>
+                <Slider
+                    x={speed}
+                    xmin = {10}
+                    xmax = {1000}
+                    xstep = {10}
+                    onChange={({ x }) => setSpeed(x)}
                 />
             </div>
 
