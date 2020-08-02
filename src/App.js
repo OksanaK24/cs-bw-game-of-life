@@ -1,10 +1,11 @@
 import React from "react";
 import Board from "./components/Board"
+import About from "./components/About"
 
 function App() {
   return (
     <div >
-      "Let's code it"
+      <About />
       <Board />
     </div>
   );

@@ -11,7 +11,7 @@ export default function About(){
                 <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
                 <li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
             </ol>
-            <p>All rules you can find <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">here</a></p>
+            <p>All rules you can find <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank" rel="noopener noreferrer">here</a></p>
         </div>
     )
 }

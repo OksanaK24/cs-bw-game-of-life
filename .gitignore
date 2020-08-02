@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # my drafts
+.Board_draft.js
+.slider_draft.js
