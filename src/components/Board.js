@@ -6,6 +6,7 @@ import cell_neighbors from "../utils/neighbors"
 import {numRows, numColumns, cellWidth, cellHeight} from "../utils/board_params"
 
 import Grid from "../utils/Grid_empty"
+import RandomGrid from "../utils/Grid_random"
 
 export default function Board(){
 
@@ -18,7 +19,7 @@ export default function Board(){
     columnsRef.current = columnsAmount
 
     const [grid, setGrid] = useState(() => {
-        return Grid(rowRef.current, columnsRef.current)
+        return Grid(rowAmount, columnsAmount)
     })
 
     const [playing, setPlay] = useState(false)
@@ -31,10 +32,6 @@ export default function Board(){
     const [generation, setGeneration] = useState(1)
     const generationRef = useRef(generation)
     generationRef.current = generation
-
-    useEffect(() => {
-        Grid(rowRef.current, columnsRef.current)
-    }, [rowAmount, columnsAmount])
 
 
     // The function to make the cell alive or dead (onClick)
@@ -149,10 +146,18 @@ export default function Board(){
 
             <button
                 onClick={() => {
-                    setGrid(Grid(rowRef.current, columnsRef.current))
+                    setGrid(Grid(rowAmount, columnsAmount))
                 }}
             >
                 Clear
+            </button>
+
+            <button
+                onClick={() => {
+                    setGrid(RandomGrid(rowAmount, columnsAmount))
+                }}
+            >
+                Random Grid
             </button>
 
             <div>
@@ -166,16 +171,6 @@ export default function Board(){
                     valueLabelDisplay="auto"
                     aria-labelledby="non-linear-slider"
                 />
-                {/* <h3>Change the amount of columns</h3>
-                <Slider
-                    value={columnsRef.current}
-                    min={5}
-                    step={1}
-                    max={100}
-                    onChange={columnChange}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="non-linear-slider"
-                /> */}
             </div>
 
         </>

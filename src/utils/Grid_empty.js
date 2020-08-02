@@ -1,5 +1,3 @@
-// import {numRows, numColumns} from "./board_params"
-
 // Creating arr of column inside of arr of rows
 const Grid = (numRows, numColumns) => {
     const rows = []
