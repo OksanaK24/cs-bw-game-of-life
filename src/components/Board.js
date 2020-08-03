@@ -12,6 +12,7 @@ import Tree1 from "../images/tree1.png"
 import Tree2 from "../images/tree2.png"
 import Tree3 from "../images/tree3.png"
 import Tree4 from "../images/tree4.png"
+import Square from "../images/square.jpg"
 
 export default function Board(){
 
@@ -19,8 +20,9 @@ export default function Board(){
     const gridSizeRef = useRef(gridSize)
     gridSizeRef.current = gridSize
 
-    const [cellHeight, setCellHeight] = useState("20px")
+    // const [cellDim, setCellDim] = useState(parseInt(`${gridWidth}/${gridSizeRef.current}`))
     const [cellWidth, setCellWidth] = useState("20px")
+    const [cellHeight, setCellHeight] = useState("20px")
 
 
     const [grid, setGrid] = useState(() => {
@@ -130,19 +132,22 @@ export default function Board(){
             }else if(x > 50 && x < 75){
                 setCellHeight("10px")
                 setCellWidth("10px")
+            }else{
+                setCellHeight("7px")
+                setCellWidth("7px")
             }
         }
     }
 
     const settingImage = () => {
         if (image < 50){
-          return <img src={Tree1} alt="tree1"/>
+          return <div className="fade-in" ><img src={Tree1} alt="tree1"/></div>
         } else if (image > 50 && image < 100) {
-          return <img src={Tree2} alt="tree2"/>
+          return <div className="fade-in" ><img src={Tree2} alt="tree2"/></div>
         }else if (image > 100 && image < 200) {
-          return <img src={Tree3} alt="tree3"/>
+          return <div className="fade-in" ><img src={Tree3} alt="tree3"/></div>
         }else if (image > 200) {
-          return <img src={Tree4} alt="tree4"/>
+          return <div className="fade-in" ><img src={Tree4} alt="tree4"/></div>
         }
     }
 
@@ -192,13 +197,7 @@ export default function Board(){
                     Generation: {generationRef.current}
                 </div>
 
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                    }}
-                >
+                <div className="all-buttons">
                     <button
                         className="buttons"
                         onClick={() => {

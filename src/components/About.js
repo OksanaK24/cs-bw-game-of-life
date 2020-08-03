@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import "../vivify.min.css"
+import "../styling.css"
 
 // Green colors: #228B22, #006600
 // Brown colors: #663300
@@ -24,54 +24,23 @@ export default function About(){
     return(
         <div>
             {/* <h1 >Welcome to the Conway's Game of Life</h1> */}
-            <h1
-                style={{
-                    fontSize: "60px",
-                    color: "#006600",
-                    textShadow: "1px 1px 5px #663300",
-                    textAlign: "center"
-                }}
-            >
+            <h1 className="about-title">
                 Conway's Game of Life
             </h1>
 
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                }}
-            >
-                <div
-                    style={{
-                        width: "25%", 
-                        height: "175px",
-                        padding: "5px",
-                        margin: "5px",
-                        color: "#663300",
-                        border: "1px solid white",
-                        textAlign: "center",
-                        cursor: "pointer" 
-                    }}
+            <div className="about-description">
+                <div 
                     onClick={settingAbout} 
+                    className="about-about"
                 >
                     {buttonAbout && (
-                        <p
-                            style={{
-                                fontSize: "40px",
-                                fontWeight: "bold"
-                            }}
-                        >
+                        <p className="about-button">
                             About
                         </p>
                     )}
 
                     {about && (
-                        <p 
-                            style={{
-                                fontSize: "20px",
-                            }}
-                        >
+                        <p className="about-text">
                             The Game of Life, also known simply as Life, is a cellular automaton devised by 
                             the British mathematician John Horton Conway in 1970. <br/> It is a zero-player game, 
                             meaning that its evolution is determined by its initial state, requiring 
@@ -83,34 +52,17 @@ export default function About(){
                 </div>
 
                 <div
-                    style={{
-                        width: "25%", 
-                        height: "175px",
-                        padding: "5px",
-                        margin: "5px", 
-                        color: "#663300",
-                        border: "1px solid white",
-                        textAlign: "center",
-                        cursor: "pointer"  
-                    }}
+                    className="about-about"
                     onClick={settingRules} 
                 >
                     {readRules && (
-                        <h3
-                            style={{
-                                fontSize: "40px",
-                            }}
-                        >
+                        <p className="about-button">
                             Rules
-                        </h3>
+                        </p>
                     )}
 
                     {rules && (
-                        <div
-                            style={{
-                                fontSize: "20px",
-                            }}
-                        >
+                        <div className="about-text">
                             <p> 1. Any live cell with fewer than two live neighbours dies, as if by underpopulation. <br/>
                             2. Any live cell with two or three live neighbours lives on to the next generation.<br/>
                             3. Any live cell with more than three live neighbours dies, as if by overpopulation.<br/>
