@@ -12,7 +12,6 @@ import Tree1 from "../images/tree1.png"
 import Tree2 from "../images/tree2.png"
 import Tree3 from "../images/tree3.png"
 import Tree4 from "../images/tree4.png"
-import Square from "../images/square.jpg"
 
 export default function Board(){
 
@@ -123,10 +122,10 @@ export default function Board(){
             setGridSize(x)
             setGrid(Grid(x))
             setGeneration(1)
-            if(x < 25){
+            if(x <= 25){
                 setCellHeight("20px")
                 setCellWidth("20px")
-            }else if(x > 25 && x < 50){
+            }else if(x > 25 && x <= 50){
                 setCellHeight("15px")
                 setCellWidth("15px")
             }else if(x > 50 && x < 75){
